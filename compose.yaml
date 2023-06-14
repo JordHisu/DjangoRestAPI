@@ -1,0 +1,11 @@
+services:
+  main:
+    image: jordhisu/django-rest-api:latest
+    build: .
+    ports:
+      - '8080:80'
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=hisu
+      - DJANGO_SUPERUSER_PASSWORD=hisu
+      - DJANGO_SUPERUSER_EMAIL=hisu@mail.com
+

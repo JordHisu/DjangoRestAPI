@@ -17,8 +17,16 @@
 # Atualizar os dados de um jogo específico de um jogador
 
 
+# docker build . -t jordhisu/django-rest-api
+# docker image push jordhisu/django-rest-api
+# docker compose up
+# docker build . -t jordhisu/django-rest-api; docker image push jordhisu/django-rest-api; docker compose up
+# docker compose run main /bin/bash
+
+# docker run -it --entrypoint /bin/bash jordhisu/django-web-app-repo -s
 
 
 
+# docker image tag django-rest-api jordhisu/django-rest-api
 
 
