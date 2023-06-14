@@ -3,11 +3,12 @@ from rest_framework import routers
 from restAPI.APIApp import views
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+# router.register(r'groups', views.GroupViewSet)
 router.register(r'cities', views.CityViewSet)
 router.register(r'states', views.StateViewSet)
+router.register(r'users', views.UserViewSet)
 router.register(r'players', views.PlayerViewSet)
+router.register(r'scores', views.ScoreViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

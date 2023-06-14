@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models.city import City
-from .models.state import State
-from .models.player import Player
+from .models import City
+from .models import State
+from .models import Player
+from .models import GameScore
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,10 +18,10 @@ class PlayerSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'name', 'nickname', 'user']
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['url', 'name']
+# class GroupSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Group
+#         fields = ['url', 'name']
 
 
 class CitySerializer(serializers.HyperlinkedModelSerializer):
@@ -32,5 +33,11 @@ class CitySerializer(serializers.HyperlinkedModelSerializer):
 class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
+        fields = '__all__'
+
+
+class ScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameScore
         fields = '__all__'
 

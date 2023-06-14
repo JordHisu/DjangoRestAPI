@@ -6,10 +6,11 @@ from rest_framework import permissions
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, ListCreateAPIView
 from rest_framework.views import APIView
 
-from restAPI.APIApp.serializers import UserSerializer, GroupSerializer, CitySerializer, StateSerializer, PlayerSerializer
+from restAPI.APIApp.serializers import UserSerializer, CitySerializer, StateSerializer, PlayerSerializer, ScoreSerializer
 from .models import City
 from .models import State
 from .models import Player
+from .models import GameScore
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 import csv
@@ -47,13 +48,13 @@ class PlayerViewSet(viewsets.ModelViewSet):
         return Response({'status': 'SUCCESS'}, status=status.HTTP_200_OK)
 
 
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+# class GroupViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows groups to be viewed or edited.
+#     """
+#     queryset = Group.objects.all()
+#     serializer_class = GroupSerializer
+#     # permission_classes = [permissions.IsAuthenticated]
 
 
 class CityViewSet(viewsets.ModelViewSet):
@@ -73,6 +74,22 @@ class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
     serializer_class = StateSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+
+class ScoreViewSet(viewsets.ModelViewSet):
+    queryset = GameScore.objects.all()
+    serializer_class = ScoreSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = self.queryset.order_by('-score')
+        player_filter = self.request.query_params.get('player')
+        if player_filter:
+            queryset = queryset.filter(player=player_filter)
+        score_filter = self.request.query_params.get('score')
+        if score_filter:
+            queryset = queryset.filter(score=score_filter)
+        return queryset
 
 
 @api_view()
