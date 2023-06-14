@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'cities', views.CityViewSet)
 router.register(r'states', views.StateViewSet)
 router.register(r'users', views.UserViewSet)
-router.register(r'players', views.PlayerViewSet)
+router.register(r'players', views.PlayerViewSet, basename='player')
 router.register(r'scores', views.ScoreViewSet)
 
 # Wire up our API using automatic URL routing.

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.db.models import QuerySet
 from django.http import Http404
+from django.urls import reverse
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, ListCreateAPIView
@@ -22,13 +23,19 @@ class UserViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        user_serializer = UserSerializer(data=request.data)
-        user_serializer.is_valid()
-        if user_serializer.is_valid():
-            user = user_serializer.save()
-            return Response({'status': 'SUCCESS', 'player_id': user.player.id})
-        else:
-            return Response(user_serializer.errors, status.HTTP_400_BAD_REQUEST)
+        player_data = request.data.copy()
+        player_serializer = PlayerSerializer(data=player_data)
+        player_serializer.is_valid(raise_exception=True)
+        player = player_serializer.save()
+
+        user_data = request.data.copy()
+        user_data['player'] = reverse('player-detail', args=[player.id])
+        user_serializer = UserSerializer(data=user_data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()
+        player.user = user
+        player.save()
+        return Response({'status': 'SUCCESS', 'player_id': player.id})
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
@@ -77,19 +84,43 @@ class StateViewSet(viewsets.ModelViewSet):
 
 
 class ScoreViewSet(viewsets.ModelViewSet):
-    queryset = GameScore.objects.all()
+    queryset = GameScore.objects.all().order_by('-score')
     serializer_class = ScoreSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        queryset = self.queryset.order_by('-score')
+    def filter_queryset(self, queryset):
+        queryset = self.queryset
+        queryset = self.filter_player(queryset)
+        queryset = self.filter_score(queryset)
+        return queryset
+
+    def filter_player(self, queryset):
         player_filter = self.request.query_params.get('player')
         if player_filter:
             queryset = queryset.filter(player=player_filter)
+        return queryset
+
+    def filter_score(self, queryset):
         score_filter = self.request.query_params.get('score')
         if score_filter:
             queryset = queryset.filter(score=score_filter)
         return queryset
+
+    @action(detail=False, methods=['delete'])
+    def delete_filtered(self, request):
+        player_id = self.request.query_params.get('player')
+        try:
+            player = Player.objects.get(pk=player_id)
+        except Player.DoesNotExist:
+            player = None
+
+        if player_id is None or player is None:
+            return Response({'status': 'FAILED', 'reason': "You need to specify a valid player."}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = self.filter_player(self.get_queryset())
+        queryset = self.filter_score(queryset)
+        count, _ = queryset.delete()
+        return Response({'status': 'SUCCESS', 'count': count, 'player': int(player_id)}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view()
