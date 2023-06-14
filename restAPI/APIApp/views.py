@@ -1,22 +1,50 @@
 from django.contrib.auth.models import User, Group
 from django.db.models import QuerySet
+from django.http import Http404
 from rest_framework import viewsets, status
 from rest_framework import permissions
-from restAPI.APIApp.serializers import UserSerializer, GroupSerializer, CitySerializer, StateSerializer
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.views import APIView
+
+from restAPI.APIApp.serializers import UserSerializer, GroupSerializer, CitySerializer, StateSerializer, PlayerSerializer
 from .models import City
 from .models import State
-from rest_framework.decorators import api_view
+from .models import Player
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 import csv
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        user_serializer = UserSerializer(data=request.data)
+        user_serializer.is_valid()
+        if user_serializer.is_valid():
+            user = user_serializer.save()
+            return Response({'status': 'SUCCESS', 'player_id': user.player.id})
+        else:
+            return Response(user_serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+
+class PlayerViewSet(viewsets.ModelViewSet):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def partial_update(self, request, *args, **kwargs):
+        player = self.get_object()
+        data_copy = request.data.copy()
+        player_serializer = self.get_serializer(player, data=request.data, partial=True)
+        player_serializer.is_valid(raise_exception=True)
+        user_serializer = self.get_serializer(player.user, data=data_copy, partial=True)
+        user_serializer.is_valid(raise_exception=True)
+        self.perform_update(player_serializer)
+        self.perform_update(user_serializer)
+        return Response({'status': 'SUCCESS'}, status=status.HTTP_200_OK)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
