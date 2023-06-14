@@ -1,5 +1,8 @@
+from django.conf.urls.static import static
 from django.urls import include, path
 from rest_framework import routers
+
+from restAPI import settings
 from restAPI.APIApp import views
 
 router = routers.DefaultRouter()
@@ -16,4 +19,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('populate_database', views.populate_database),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
