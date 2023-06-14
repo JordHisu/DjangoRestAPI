@@ -33,6 +33,13 @@ class CityViewSet(viewsets.ModelViewSet):
     serializer_class = CitySerializer
     # permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = self.queryset
+        state_filter = self.request.query_params.get('state')
+        if state_filter:
+            queryset = queryset.filter(state=state_filter)
+        return queryset
+
 
 class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
@@ -40,7 +47,7 @@ class StateViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
-@api_view(['GET'])
+@api_view()
 def populate_database(request):
     State.objects.all().delete()
     City.objects.all().delete()
@@ -76,6 +83,6 @@ def populate_database(request):
 
     City.objects.bulk_create(cities_to_save)
     State.objects.bulk_update(states_to_update, fields=['capital'])
-
-    return Response(status=status.HTTP_200_OK)
+    response_body = {'status': 'SUCCESS'}
+    return Response(data=response_body, status=status.HTTP_200_OK)
 

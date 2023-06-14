@@ -12,6 +12,6 @@ router.register(r'states', views.StateViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
-    path('populate_database/', views.populate_database),
+    path('populate_database', views.populate_database),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

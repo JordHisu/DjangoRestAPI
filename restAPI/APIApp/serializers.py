@@ -16,13 +16,13 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'name']
 
 
-class CitySerializer(serializers.ModelSerializer):
+class CitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = City
         fields = '__all__'
 
 
-class StateSerializer(serializers.ModelSerializer):
+class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
         fields = '__all__'
