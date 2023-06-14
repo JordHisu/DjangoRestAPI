@@ -25,8 +25,6 @@ SECRET_KEY = 'django-insecure-v1ah!a*m5or+gr5ssnw6#63mg7xp&4&n(v45wle-fq3164ofx(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -139,4 +137,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
+ALLOWED_HOSTS = ['*']
 

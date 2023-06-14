@@ -30,3 +30,19 @@
 # docker image tag django-rest-api jordhisu/django-rest-api
 
 
+
+# Libera as portas na máquina virtual EC2
+# sudo iptables -L
+# sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+# docker run -d -p 8080:8080 jordhisu/django-rest-api
+
+
+# No terminal local:
+# ssh -i lab-web.pem ubuntu@<ec2_public_ip>
+
+# No terminal ssh:
+# docker pull jordhisu/django-rest-api
+# docker stop $(docker ps -a -q) & docker ps & docker run -d -p 80:80 jordhisu/django-rest-api
+
+# Acessar o site:
+# http://<ec2_public_ip>:8080/
