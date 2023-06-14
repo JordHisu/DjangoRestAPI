@@ -5,7 +5,7 @@ from django.dispatch import receiver
 
 
 class Player(models.Model):
-    user = models.OneToOneField(User, related_name='player', on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50, default='')
 
     def __str__(self):
