@@ -31,7 +31,9 @@ class UserViewSet(viewsets.ModelViewSet):
         user_data = request.data.copy()
         user_data['player'] = reverse('player-detail', args=[player.id])
         user_serializer = UserSerializer(data=user_data)
-        user_serializer.is_valid(raise_exception=True)
+        if not user_serializer.is_valid():
+            player.delete()
+            return Response({'status': 'FAILED', 'reason': user_serializer.errors})
         user = user_serializer.save()
         player.user = user
         player.save()
@@ -56,7 +58,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.perform_destroy(instance.user)
+        if instance.user is not None:
+            self.perform_destroy(instance.user)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

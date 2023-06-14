@@ -15,7 +15,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class PlayerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Player
-        fields = ['url', 'name', 'nickname', 'user']
+        fields = "__all__"
 
 
 # class GroupSerializer(serializers.HyperlinkedModelSerializer):
