@@ -1,7 +1,12 @@
+import json
+from datetime import datetime
+
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User, Group
 from django.db.models import QuerySet
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, ListCreateAPIView
@@ -15,6 +20,39 @@ from .models import GameScore
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 import csv
+from django.contrib.auth import authenticate
+from django.http import HttpResponse
+
+
+@csrf_exempt
+def login(request):
+    try:
+        body = json.loads(request.body)
+        user = User.objects.get(username=body['username'])
+        correct_password = body['password'] == user.password
+        if correct_password:
+            player = Player.objects.get(user_id=user.id)
+            return JsonResponse({
+                'status': 'SUCCESS',
+                'player': {
+                    'username': user.username,
+                    'superuser': user.is_superuser,
+                    'name': player.name,
+                    'email': player.email,
+                    'cep': player.cep,
+                    'city': player.city_id,
+                    'state': player.state_id,
+                    'bairro': player.bairro,
+                    'birth_date': player.birth_date,
+                    'street': player.street,
+                    'street_number': player.street_number,
+                    'id': player.pk,
+                }
+            })
+        else:
+            return JsonResponse({'status': 'FAILED', 'reason': 'User not found or password incorrect'})
+    except Exception as e:
+        return JsonResponse({'status': 'ERROR', 'reason': f"{type(e)} - {e}"})
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,12 +67,14 @@ class UserViewSet(viewsets.ModelViewSet):
         player = player_serializer.save()
 
         user_data = request.data.copy()
-        user_data['player'] = reverse('player-detail', args=[player.id])
+        user_data['player'] = player.id  # reverse('player-detail', args=[player.id])
         user_serializer = UserSerializer(data=user_data)
         if not user_serializer.is_valid():
             player.delete()
             return Response({'status': 'FAILED', 'reason': user_serializer.errors})
         user = user_serializer.save()
+        user.password = user_data['password']
+        user.save()
         player.user = user
         player.save()
         return Response({'status': 'SUCCESS', 'player_id': player.id})
@@ -54,6 +94,9 @@ class PlayerViewSet(viewsets.ModelViewSet):
         user_serializer.is_valid(raise_exception=True)
         self.perform_update(player_serializer)
         self.perform_update(user_serializer)
+        if 'password' in data_copy.keys():
+            player.user.password = data_copy['password']
+            player.user.save()
         return Response({'status': 'SUCCESS'}, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
@@ -76,6 +119,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    pagination_class = None
     # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -89,6 +133,7 @@ class CityViewSet(viewsets.ModelViewSet):
 class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
     serializer_class = StateSerializer
+    pagination_class = None
     # permission_classes = [permissions.IsAuthenticated]
 
 

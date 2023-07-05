@@ -17,6 +17,7 @@ router.register(r'scores', views.ScoreViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
+    path('login', views.login),
     path('populate_database', views.populate_database),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

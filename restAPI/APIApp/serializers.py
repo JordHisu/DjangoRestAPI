@@ -6,13 +6,15 @@ from .models import Player
 from .models import GameScore
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username', 'first_name', 'email', 'groups', 'player']
 
 
-class PlayerSerializer(serializers.HyperlinkedModelSerializer):
+class PlayerSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField()
+    email = serializers.ReadOnlyField()
     class Meta:
         model = Player
         fields = "__all__"
@@ -24,13 +26,13 @@ class PlayerSerializer(serializers.HyperlinkedModelSerializer):
 #         fields = ['url', 'name']
 
 
-class CitySerializer(serializers.HyperlinkedModelSerializer):
+class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = '__all__'
 
 
-class StateSerializer(serializers.HyperlinkedModelSerializer):
+class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = '__all__'

@@ -13,6 +13,8 @@ RUN pip3 install -r /app/requirements.txt --cache-dir /app/pip_cache
 
 RUN chown -R www-data:www-data /app
 RUN chown -R www-data:www-data /var
+RUN chmod -R +x /app
+
 EXPOSE 8080
 EXPOSE 80
 STOPSIGNAL SIGTERM
