@@ -15,8 +15,9 @@ RUN chown -R www-data:www-data /app
 RUN chown -R www-data:www-data /var
 RUN chmod -R +x /app
 
-EXPOSE 8080
 EXPOSE 80
-STOPSIGNAL SIGTERM
+EXPOSE 8000
+EXPOSE 8001
+#STOPSIGNAL SIGTERM
 CMD ["/app/start-server.sh"]
 

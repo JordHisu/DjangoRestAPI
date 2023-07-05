@@ -4,18 +4,6 @@
 # https://www.django-rest-framework.org/tutorial/2-requests-and-responses/
 # https://awsacademy.instructure.com/courses/41555/modules
 
-# Obter a relação de todos os estados
-# Obter as informações de um estado específico
-# Obter a relação de todos os municípios, com a possibilidade de paginação
-# Obter as informações de um município específico
-# Obter a relação de todos os municípios de um determinado estado
-# Inserir o cadastro de um novo jogador
-# Atualizar os dados de um jogador existente
-# Excluir um jogo específico de um jogador
-# Excluir um registro de jogador juntamente com todos os seus jogos
-# Excluir todos os jogos de um jogador específico
-# Atualizar os dados de um jogo específico de um jogador
-
 
 # docker build . -t jordhisu/django-rest-api
 # docker image push jordhisu/django-rest-api
@@ -46,3 +34,9 @@
 
 # Acessar o site:
 # http://<ec2_public_ip>:8080/
+
+
+
+# docker build . -t jordhisu/django-rest-api; docker image push jordhisu/django-rest-api
+# docker stop $(docker ps -a -q) ; docker rm $(docker ps -a -q) ; docker image prune -a --force
+# docker pull jordhisu/django-rest-api ; docker run -p 8000:8000 jordhisu/django-rest-api
